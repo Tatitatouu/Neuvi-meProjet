@@ -5,7 +5,9 @@ import "./style.scss";
 
 const Slider = () => {
   const { data } = useData();
+
   const [currentIndex, setCurrentIndex] = useState(0);
+  
   const events = data?.focus?.sort((a, b) =>
     new Date(a.date) < new Date(b.date) ? -1 : 1
   ) || [];

@@ -13,25 +13,28 @@ const EventList = () => {
   const { data, error } = useData();
   const [type, setType] = useState();
   const [currentPage, setCurrentPage] = useState(1);
-  const filteredEvents = (
-    (!type
-      ? data?.events
-      : data?.events) || []
-  ).filter((event, index) => {
-    if (
-      (currentPage - 1) * PER_PAGE <= index &&
-      PER_PAGE * currentPage > index
-    ) {
-      return true;
-    }
-    return false;
+  
+  // Premièrement, filtrer par type
+  const eventsByType = (data?.events || []).filter((event) => 
+    !type || event.type === type
+  );
+  
+  // Ensuite, appliquer la pagination sur les événements filtrés
+  const filteredEvents = eventsByType.filter((event, index) => {
+    const startIndex = (currentPage - 1) * PER_PAGE;
+    const endIndex = PER_PAGE * currentPage;
+    return index >= startIndex && index < endIndex;
   });
+
   const changeType = (evtType) => {
     setCurrentPage(1);
     setType(evtType);
   };
-  const pageNumber = Math.floor((filteredEvents?.length || 0) / PER_PAGE) + 1;
-  const typeList = new Set(data?.events.map((event) => event.type));
+
+  // Calculer le nombre de pages basé sur les événements filtrés par type
+  const pageNumber = Math.ceil((eventsByType?.length || 0) / PER_PAGE);
+  const typeList = new Set(data?.events?.map((event) => event.type) || []);
+
   return (
     <>
       {error && <div>An error occured</div>}
@@ -60,10 +63,14 @@ const EventList = () => {
             ))}
           </div>
           <div className="Pagination">
-            {[...Array(pageNumber || 0)].map((_, n) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <a key={n} href="#events" onClick={() => setCurrentPage(n + 1)}>
-                {n + 1}
+            {[...Array(pageNumber)].map((_, index) => (
+              <a 
+                key={`page-${index + 1}`} 
+                href="#events" 
+                onClick={() => setCurrentPage(index + 1)}
+                className={currentPage === index + 1 ? "active" : ""}
+              >
+                {index + 1}
               </a>
             ))}
           </div>

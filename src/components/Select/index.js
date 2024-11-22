@@ -15,13 +15,11 @@ const Select = ({
   const [collapsed, setCollapsed] = useState(true);
 
   const changeValue = (newValue) => {
-    // Correction : Passer la nouvelle valeur à onChange
     onChange(newValue);
     setValue(newValue);
     setCollapsed(true);
   };
 
-  // Gestion du clavier pour l'accessibilité
   const handleKeyDown = (event, newValue) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();

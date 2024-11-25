@@ -5,22 +5,36 @@ import "./style.scss";
 
 const Slider = () => {
   const { data } = useData();
-
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+  const [isPlaying, setIsPlaying] = useState(true);
+
   const events = data?.focus?.sort((a, b) =>
     new Date(a.date) < new Date(b.date) ? -1 : 1
   ) || [];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex(prevIndex =>
-        prevIndex < events.length - 1 ? prevIndex + 1 : 0
-      );
-    }, 5000);
-
+    let interval;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setCurrentIndex(prevIndex =>
+          prevIndex < events.length - 1 ? prevIndex + 1 : 0
+        );
+      }, 5000);
+    }
     return () => clearInterval(interval);
-  }, [events]);
+  }, [events, isPlaying]); 
+   
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.code === 'Space') {
+        event.preventDefault();
+        setIsPlaying(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   if (!events.length) return null;
 
@@ -43,7 +57,7 @@ const Slider = () => {
           </div>
         </div>
       ))}
-      
+
       <div className="SlideCard__paginationContainer">
         <div className="SlideCard__pagination">
           {events.map((event, idx) => (
@@ -56,6 +70,11 @@ const Slider = () => {
             />
           ))}
         </div>
+      </div>
+      
+      {/* Indicateur optionnel de l'état pause/play */}
+      <div className="SlideCard__playState">
+        {!isPlaying && <span className="SlideCard__pauseIndicator">⏸️</span>}
       </div>
     </div>
   );

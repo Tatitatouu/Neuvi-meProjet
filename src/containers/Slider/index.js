@@ -7,7 +7,7 @@ const Slider = () => {
   const { data } = useData();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-
+ 
   const events = data?.focus?.sort((a, b) =>
     new Date(a.date) < new Date(b.date) ? -1 : 1
   ) || [];
@@ -19,7 +19,7 @@ const Slider = () => {
         setCurrentIndex(prevIndex =>
           prevIndex < events.length - 1 ? prevIndex + 1 : 0
         );
-      }, 5000);
+      }, 4000);
     }
     return () => clearInterval(interval);
   }, [events, isPlaying]); 
